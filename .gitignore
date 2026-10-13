@@ -1,0 +1,41 @@
+# OS / Editor
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.idea/
+.vscode/
+*.code-workspace
+
+# Secrets & lokale Overrides
+.env
+.env.*
+*.env
+!*.env.example
+*.key
+*.pem
+api_key
+stingbox_api_key*
+stingbox-code*
+subscription-code*
+secrets/
+credentials/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# State / Logs / Exporte (enthalten Hostnamen, MACs, IPs, Angriffs-Sessions!)
+seen.json
+*.log
+exports/
+*.csv
+hackercam/
+tmp/
+.cache/
+
+# Archive
+*.zip
+*.tar.gz

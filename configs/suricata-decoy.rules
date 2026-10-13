@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: MIT
+# configs/suricata-decoy.rules - "Tripwire"-Regeln fuer den Koeder (Node 3)
+# WARNUNG: Beispiel, ungetestet. Funktioniert nur, wenn der StingBox-Switchport gespiegelt wird.
+#
+# suricata.yaml -> vars.address-groups:
+#   STINGBOX_IP: "10.10.10.250"           # Platzhalter
+#   DECOY_ALLOWED: "[10.10.10.1]"         # z. B. Firewalla-Gateway (DHCP/DNS); bewusst minimal!
+#
+# Lokale SIDs ab 9000100. Regeln feuern auf Verkehr ZUM Koeder, nicht auf dessen Cloud-Traffic.
+
+# 1) Jeder TCP-Verbindungsaufbau zum Koeder von einem nicht erlaubten Host
+alert tcp !$DECOY_ALLOWED any -> $STINGBOX_IP any (msg:"DECOY StingBox: TCP-SYN zum Koeder"; flags:S,12; threshold:type limit, track by_src, count 1, seconds 300; classtype:attempted-recon; sid:9000101; rev:1;)
+
+# 2) UDP zum Koeder (z. B. SNMP/NetBIOS-Probes), DHCP/DNS-Antworten des Gateways ausgenommen
+alert udp !$DECOY_ALLOWED any -> $STINGBOX_IP any (msg:"DECOY StingBox: UDP zum Koeder"; threshold:type limit, track by_src, count 1, seconds 300; classtype:attempted-recon; sid:9000102; rev:1;)
+
+# 3) ICMP-Echo zum Koeder (Ping-Sweep)
+alert icmp !$DECOY_ALLOWED any -> $STINGBOX_IP any (msg:"DECOY StingBox: ICMP-Echo zum Koeder"; itype:8; threshold:type limit, track by_src, count 1, seconds 300; classtype:attempted-recon; sid:9000103; rev:1;)
+
+# 4) SSH-Login-Versuch auf den Fake-SSH (HackerCam) - hohe Prioritaet
+alert tcp !$DECOY_ALLOWED any -> $STINGBOX_IP 22 (msg:"DECOY StingBox: SSH zum Koeder (HackerCam)"; flow:to_server,established; app-layer-protocol:ssh; threshold:type limit, track by_src, count 1, seconds 300; classtype:attempted-admin; priority:1; sid:9000104; rev:1;)

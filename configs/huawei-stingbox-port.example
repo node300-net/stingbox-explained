@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: MIT
+# Huawei S220S - Access-Port fuer die StingBox + SPAN-Quelle
+# WARNUNG: VRP-Syntax-Beispiel, NICHT am S220S verifiziert. Port-Nummern/Observe-Index anpassen.
+
+system-view
+interface GigabitEthernet0/0/10
+ description DECOY-STINGBOX-VLAN10
+ port link-type access
+ port default vlan 10
+ port-security enable
+ port-security mac-address sticky
+ port-security max-mac-num 1
+ quit
+
+# Mirror: bestehender Observe-Port Richtung Node 3 (siehe firewalla-gold-pro-msp/configs/integration/huawei-span.example)
+interface GigabitEthernet0/0/10
+ port-mirroring to observe-port 1 both
+ quit

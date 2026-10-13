@@ -1,0 +1,39 @@
+# SPDX-License-Identifier: MIT
+# Regelkonzept fuer Firewalla Gold Pro (App/MSP) - KEIN Importformat (Firewalla hat keins).
+# Quelle der Ziele: https://www.stingbox.com/faq/ (Outbound Connectivity Requirements)
+device:
+  name: StingBox
+  vlan: 10                      # MGMT
+  ip: 10.10.10.250              # Platzhalter, DHCP-Reservation
+  dns: 10.10.10.1               # via resolv.txt auf der SD-Karte statt 8.8.8.8
+rules:
+  - action: allow
+    target: stingbox.twocyber.com
+    protocol: tcp
+    port: 443
+    reason: Dashboard, Check-in, Events
+  - action: allow
+    target: checkip.amazonaws.com
+    protocol: tcp
+    port: 443
+    reason: Externe IP ermitteln
+  - action: allow
+    target: mirrors.ocf.berkeley.edu
+    protocol: tcp
+    port: [80, 443]             # ⚠️ Port nicht dokumentiert
+    reason: Ubuntu-Updates
+  - action: allow               # nur noetig, wenn DNS NICHT auf Firewalla umgestellt wird
+    target: 8.8.8.8
+    protocol: udp
+    port: 53
+    enabled: false
+  - action: block
+    target: internet
+    reason: Alles andere ausgehend blockieren
+  - action: block
+    target: [10.10.50.0/24, 10.10.60.0/24, 10.10.80.0/24, 172.16.100.0/29]
+    reason: Koeder soll nur sein eigenes Segment sehen
+inbound: none                   # StingBox braucht keine eingehenden Freigaben
+notes:
+  - Regel-Prioritaet in der Firewalla-App pruefen (Allow vor Block).
+  - Innerhalb von VLAN 10 (Layer 2) kann Firewalla NICHT filtern - dafuer Switch/Port-Security.

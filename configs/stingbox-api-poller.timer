@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: MIT
+# /etc/systemd/system/stingbox-api-poller.timer  (Node 3)
+[Unit]
+Description=StingBox API alle 60 Sekunden abfragen
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=60s
+AccuracySec=5s
+
+[Install]
+WantedBy=timers.target

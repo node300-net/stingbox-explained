@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: MIT
+# /etc/systemd/system/stingbox-api-poller.service  (Node 3)
+[Unit]
+Description=StingBox API -> lokales Syslog (Pull)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+# Skript nach /usr/local/bin kopieren; Key in /etc/stingbox/api_key (chmod 600, root)
+ExecStart=/usr/bin/python3 /usr/local/bin/stingbox-api-poller.py --once
+StateDirectory=stingbox-poller
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/var/lib/stingbox-poller
